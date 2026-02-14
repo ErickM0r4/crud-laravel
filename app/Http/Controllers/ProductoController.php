@@ -12,7 +12,8 @@ class ProductoController extends Controller
      */
     public function index()
     {
-        //
+        $productos = Producto::orderByDesc('id')->paginate(10);
+        return view('productos.index', compact('productos'));
     }
 
     /**
@@ -20,7 +21,7 @@ class ProductoController extends Controller
      */
     public function create()
     {
-        //
+        return view('productos.create');
     }
 
     /**
@@ -28,7 +29,17 @@ class ProductoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'nombre' => ['required', 'string', 'min:3', 'max:255'],
+            'precio' => ['required', 'numeric', 'min:0'],
+            'descripcion' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        Producto::create($data);
+
+        return redirect()
+            ->route('productos.index')
+            ->with('success', 'Producto creado correctamente.');
     }
 
     /**
@@ -44,7 +55,7 @@ class ProductoController extends Controller
      */
     public function edit(Producto $producto)
     {
-        //
+        return view('productos.edit', compact('producto'));
     }
 
     /**
@@ -52,7 +63,17 @@ class ProductoController extends Controller
      */
     public function update(Request $request, Producto $producto)
     {
-        //
+        $data = $request->validate([
+            'nombre' => ['required', 'string', 'min:3', 'max:255'],
+            'precio' => ['required', 'numeric', 'min:0'],
+            'descripcion' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        $producto->update($data);
+
+        return redirect()
+            ->route('productos.index')
+            ->with('success', 'Producto actualizado correctamente.');
     }
 
     /**
@@ -60,6 +81,10 @@ class ProductoController extends Controller
      */
     public function destroy(Producto $producto)
     {
-        //
+        $producto->delete();
+
+        return redirect()
+            ->route('productos.index')
+            ->with('success', 'Producto eliminado correctamente.');
     }
 }
